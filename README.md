@@ -1,43 +1,69 @@
-# Concentration Regimes: A Probabilistic Model of Institutional Trading Behavior
+<div align="center">
 
-### Does foreign institutional flow move Indian equity prices permanently, or does it revert? A regime-detection pipeline that answers with a pre-registered, gate-driven validation battery — and reports the answer even where it contradicts the starting hypothesis.
+# Concentration Regimes
+
+### A Probabilistic Model of Institutional Trading Behavior
+
+*Does foreign institutional flow move Indian equity prices permanently, or does it revert?*
+*A regime-detection pipeline that answers with a pre-registered, gate-driven validation battery —*
+*and reports the answer even where it contradicts the starting hypothesis.*
+
+</div>
+
+<br>
+
+**Contents** · [What this is](#1--what-this-is) · [Results](#2--results) ·
+[Methodology](#3--methodology-step-by-step) · [Quickstart](#4--quickstart) ·
+[Repository layout](#5--repository-layout) · [Documentation](#6--documentation-map) ·
+[Design decisions](#7--design-decisions-worth-knowing) · [Data note](#8--data-note) ·
+[Requirements](#9--requirements)
+
+<br>
 
 ---
 
-## 1. What this is
+## 1 · What this is
 
 Fourteen years (2011–2025) of masked, daily, stock-level Foreign Institutional
-Investor (FII) trade records from India's depository (NSDL) contain a
-question every market-microstructure researcher cares about: **when foreign
-flow pushes a price, does that push contain information, or is it just
-temporary pressure that reverts?**
+Investor (FII) trade records from India's depository (NSDL) contain a question
+every market-microstructure researcher cares about:
 
-This repository is a fully reproducible research pipeline that:
+> **When foreign flow pushes a price, does that push contain information —
+> or is it just temporary pressure that reverts?**
 
-1. Builds an unsupervised **regime-detection model** (Hidden Markov Model,
-   plus a challenger factorial-HMM and LightGBM) over ten leakage-safe,
-   cross-sectionally-ranked flow features — no price or macro data anywhere
-   near the model.
-2. Runs a **pre-registered, gate-driven validation battery** — 20+ stages,
-   each with a PASS/FAIL verdict declared *before* the result is computed —
-   spanning event studies, panel regressions with fixed effects and two-way
-   clustering, an independent probability-of-informed-trading estimator, and
-   walk-forward backtests with transaction costs.
-3. Reports what it found, **including the parts that inverted the project's
-   own starting hypothesis and the parts that failed pre-registered bars.**
-   The negative results are not cut from the story; they are the story's
-   evidence for why the surviving claims can be trusted.
+This repository is a fully reproducible research pipeline built to answer that
+question, end to end.
 
-Every stage is the original, sequentially-verified research script,
-preserved and executed as-is — not a rewritten summary. The full evidence
-trail (every failure, every fix, every falsified prior) is in
+<br>
+
+**① A regime-detection model.** Unsupervised — a Hidden Markov Model, with a
+challenger factorial-HMM and LightGBM — over ten leakage-safe,
+cross-sectionally-ranked flow features. No price or macro data anywhere near
+the model.
+
+**② A validation battery.** 20+ stages, pre-registered, each with a PASS/FAIL
+verdict declared *before* the result is computed. Event studies. Panel
+regressions with fixed effects and two-way clustering. An independent
+probability-of-informed-trading estimator. Walk-forward backtests with
+transaction costs.
+
+**③ Honest reporting.** Including the parts that inverted the project's own
+starting hypothesis, and the parts that failed pre-registered bars. Negative
+results aren't cut from the story — they're the evidence for why the
+surviving claims can be trusted.
+
+<br>
+
+Every stage is the original, sequentially-verified research script, preserved
+and executed as-is — not a rewritten summary. The full evidence trail (every
+failure, every fix, every falsified prior) lives in
 [`docs/research_log/`](docs/research_log/).
 
 ---
 
-## 2. Results
+## 2 · Results
 
-### 2.1 The headline finding
+### 2.1 · The headline finding
 
 > **Concentrated** FII selling (few institutions transacting a stock on a
 > given day) is **liquidity-demanding**: prices fall alongside a volume
@@ -55,7 +81,7 @@ This is the **opposite** of the project's pre-registered hypothesis
 The inversion survived a full referee-style attack (§2.4) and is reported
 as the finding, not hidden as a failure.
 
-### 2.2 Panel-regression evidence (Table 1: excess CAR, stock+date fixed effects, two-way clustered)
+### 2.2 · Panel-regression evidence (Table 1: excess CAR, stock+date fixed effects, two-way clustered)
 
 Coefficients in basis points, 20-day forward excess CAR, `linearmodels.PanelOLS`:
 
@@ -79,7 +105,7 @@ flow-magnitude (INNOV) control; an index-reconstitution exclusion window;
 and a LightGBM challenger with SHAP attribution. Full derivation:
 [`docs/04_validation_framework.md`](docs/04_validation_framework.md).
 
-### 2.3 Regime census (out-of-sample, TEST era: Jul 2021 – Mar 2025)
+### 2.3 · Regime census (out-of-sample, TEST era: Jul 2021 – Mar 2025)
 
 | Archetype | Share of stock-days |
 |---|---:|
@@ -89,11 +115,11 @@ and a LightGBM challenger with SHAP attribution. Full derivation:
 | SHARK_ACC (concentrated buy) | 7.0% |
 | HOSTAGE (dispersed sell) | 5.6% |
 
-### 2.4 It survived an adversarial self-audit
+### 2.4 · It survived an adversarial self-audit
 
-Two rounds of hostile re-reading — an external-referee simulation (Module
-13) and a skeptic self-audit (Module 15) — attacked exactly the three
-weakest joints in the argument:
+Two rounds of hostile re-reading — an external-referee simulation (Module 13)
+and a skeptic self-audit (Module 15) — attacked exactly the three weakest
+joints in the argument:
 
 | Objection | Test | Verdict |
 |---|---|---|
@@ -102,7 +128,7 @@ weakest joints in the argument:
 | "It's just bid-ask bounce" | Re-run on bounce-free windows (t+3 … t+22) | Bounce = **11–24% of the headline** effect, not all of it — repriced and stated verbatim, not hidden |
 | "Composition adds nothing beyond public/flow data" | LightGBM IC ladder: PUBLIC → +FLOW → +COMPOSITION | Composition adds ΔIC beyond both public data (t=5.2) and conventional flow (t=3.2) |
 
-### 2.5 What did *not* survive — reported honestly
+### 2.5 · What did *not* survive — reported honestly
 
 - **Block/bulk-deal corroboration (Module 6): negative.** Concentrated
   selling does not coincide with visible block deals more than dispersed
@@ -125,7 +151,7 @@ weakest joints in the argument:
 
 ---
 
-## 3. Methodology, step by step
+## 3 · Methodology, step by step
 
 ```mermaid
 flowchart TD
@@ -184,49 +210,22 @@ pre-registered PASS/FAIL gate — see [`docs/STAGES.md`](docs/STAGES.md) for
 the complete manifest (inputs, outputs, and the exact verdict rule for
 every one of the 55 registered stages).
 
-### Why this order, in one paragraph per step
+### Why this order
 
-1. **Data preparation** — the price tape has real defects (a four-digit
-   year bug, null 2011 ISINs, un-restated close prices on ex-dates). Fixing
-   them *before* anything touches returns is what makes every later
-   basis-point number trustworthy.
-2. **Feature engineering** — ten features per stock-day, every one a
-   **within-day cross-sectional percentile rank** (never a raw level) and
-   **strictly backward-looking** — this neutralizes 2011–2025 breadth growth
-   and a 2021 structural break without needing a single price or macro input.
-3. **Identity audit** — before trusting any entity-level feature, the
-   project tested whether masked FII/broker IDs are stable identities.
-   They are not (0% cross-month persistence, proven with a formal test) —
-   so every entity-concentration feature was redesigned to be
-   **within-day/within-month only**. This finding shaped the whole feature
-   set and is documented as a standalone citable note:
-   [`docs/paper/identifier_audit_note.md`](docs/paper/identifier_audit_note.md).
-4. **Regime model** — a 3-state Gaussian HMM backbone (direction) plus
-   concentration-overlay rules (thresholds frozen from the TRAIN era only,
-   via a quantile rule adopted after the original GMM approach failed its
-   own stability falsification test — a documented failure, not a footnote).
-5. **Canonical identity** — corporate actions (splits, mergers, renames)
-   fragment a single company across multiple ISINs over time; an
-   issuer-code-bounded closure rule reconciles the price tape and the model
-   states to the same company identity, recovering 8 points of coverage
-   without a single false merger-collapse.
-6. **Economic validation battery** — the actual test of the hypothesis:
-   does concentrated vs. dispersed selling actually behave differently in
-   forward returns? Six independent methods (event study, mechanism
-   decomposition, FE panel regression, robustness battery, ML challenger,
-   independent PIN estimator) converge on the same answer.
-7. **Adversarial self-audit** — the project attacked its own strongest
-   claims twice, from a simulated referee's perspective and then from a
-   deliberately hostile self-review, and reports the resulting price
-   corrections verbatim rather than only the version that survived.
-8. **Backtests** — the final, hardest question: does any of this survive
-   contact with a transaction-cost model? Answered honestly: the signal is
-   real at the gross/portfolio level, but no variant clears realistic
-   one-way costs.
+| Step | What happens | Why it's here |
+|---|---|---|
+| **① Data preparation** | Repair the price tape | It has real defects — a four-digit year bug, null 2011 ISINs, un-restated ex-date closes. Fix these *before* touching returns so every later bp number is trustworthy. |
+| **② Feature engineering** | Ten within-day, backward-only percentile-rank features | Cross-sectional ranking neutralizes 2011–2025 breadth growth and the 2021 structural break, without a single price or macro input. |
+| **③ Identity audit** | Test whether masked FII/broker IDs are stable | They are not — 0% cross-month persistence, proven formally. Every entity feature was redesigned to be within-day/within-month only. Standalone note: [`identifier_audit_note.md`](docs/paper/identifier_audit_note.md). |
+| **④ Regime model** | 3-state HMM backbone + concentration-overlay thresholds | Thresholds are frozen from the TRAIN era via a quantile rule — adopted *after* the original GMM approach failed its own stability falsification test. |
+| **⑤ Canonical identity** | Issuer-bounded ISIN closure | Corporate actions fragment one company across multiple ISINs; closure reconciles tape and model states, recovering 8 coverage points with zero false merger-collapses. |
+| **⑥ Validation battery** | Six independent methods, one question | Does concentrated vs. dispersed selling actually behave differently in forward returns? Event study, mechanism decomposition, FE panel regression, robustness battery, ML challenger, and an independent PIN estimator all converge on the same answer. |
+| **⑦ Adversarial self-audit** | Attack the strongest claims, twice | Once as a simulated referee, once as a deliberately hostile self-review — with the resulting price corrections reported verbatim, not just the surviving version. |
+| **⑧ Backtests** | Does it survive transaction costs? | Answered honestly: the signal is real at the gross/portfolio level, but no variant clears realistic one-way costs. |
 
 ---
 
-## 4. Quickstart
+## 4 · Quickstart
 
 ```bash
 # 1. environment (uv)
@@ -254,9 +253,11 @@ python pipeline.py --model hmm_regime             # train/evaluate a model
 
 Every run writes a timestamped log per stage to `outputs/logs/`; seeds are
 fixed from `config/config.yaml`. A failed gate halts the chain — this is by
-design (§ Design decisions).
+design (see § 7, Design decisions).
 
-## 5. Repository layout
+---
+
+## 5 · Repository layout
 
 ```
 pipeline.py                  unified entrypoint
@@ -289,9 +290,11 @@ Stage scripts under `src/fii/` carry descriptive names
 match their entry in `stages/registry.py` and `docs/STAGES.md`. The
 original Colab-era names (`module5a_...`, `module9_...`) are preserved
 verbatim only under `legacy/colab_modules/`, which exists specifically as
-an unmodified historical record — see § Design decisions.
+an unmodified historical record — see § 7, Design decisions.
 
-## 6. Documentation map
+---
+
+## 6 · Documentation map
 
 | | |
 |---|---|
@@ -306,42 +309,64 @@ an unmodified historical record — see § Design decisions.
 | [`docs/paper/identifier_audit_note.md`](docs/paper/identifier_audit_note.md) | standalone note: the masked-identifier audit protocol |
 | [`docs/ADOPTION_RECIPE.md`](docs/ADOPTION_RECIPE.md) | one-page recipe: compute the composition measure on your own data |
 
-## 7. Design decisions worth knowing
+---
 
-**Stages are the original research scripts, preserved.** This research was
-built as sequentially-verified scripts, each with pre-registered PASS/FAIL
-gates in its printed output; the validation log cites those exact artifacts.
-Migration from the original Colab notebooks applied exactly two mechanical
-substitutions (Colab paths → `fii.paths`; backtest session-coupling → an
-explicit import), auditable in `scripts/migrate_colab_modules.py`; a later
-pass renamed the migrated files to descriptive names for readability
-(logic untouched). Originals live byte-for-byte in `legacy/`. Changing
-stage *logic* requires re-running the affected gates — that is the contract.
+## 7 · Design decisions worth knowing
 
-**The temporal protocol is frozen.** Train ≤ 2021-04-30, test ≥ 2021-07-01,
-May–June 2021 masked everywhere. These dates live in config for
-transparency, not for tuning.
+#### Stages are the original research scripts, preserved
 
-**Failures are part of the record.** The battery caught two silent code
-corruptions, a false exchange-data assumption, a CA-parser bug, and two
-wrong economic narratives — all documented in the research log with their
-fixes. This is a feature of the methodology, not an embarrassment.
+This research was built as sequentially-verified scripts, each with
+pre-registered PASS/FAIL gates in its printed output; the validation log
+cites those exact artifacts. Migration from the original Colab notebooks
+applied exactly two mechanical substitutions (Colab paths → `fii.paths`;
+backtest session-coupling → an explicit import), auditable in
+`scripts/migrate_colab_modules.py`.
 
-**Extending with a new model** = copy `src/fii/models/_template.py`, set a
-name, implement four methods. The registry auto-discovers it; the frozen
-split, feature-store contract, and validation battery apply unchanged.
+A later pass renamed the migrated files to descriptive names for
+readability (logic untouched). Originals live byte-for-byte in `legacy/`.
+Changing stage *logic* requires re-running the affected gates — that is
+the contract.
 
-## 8. Data note
+<br>
 
-The pipeline expects the two research data exports (NSDL FII trade parquets
-+ NSE price/CA/deal data). They are **not** redistributed in this repository;
+#### The temporal protocol is frozen
+
+Train ≤ 2021-04-30, test ≥ 2021-07-01, May–June 2021 masked everywhere.
+These dates live in config for transparency, not for tuning.
+
+<br>
+
+#### Failures are part of the record
+
+The battery caught two silent code corruptions, a false exchange-data
+assumption, a CA-parser bug, and two wrong economic narratives — all
+documented in the research log with their fixes. This is a feature of the
+methodology, not an embarrassment.
+
+<br>
+
+#### Extending with a new model
+
+Copy `src/fii/models/_template.py`, set a name, implement four methods.
+The registry auto-discovers it; the frozen split, feature-store contract,
+and validation battery apply unchanged.
+
+---
+
+## 8 · Data note
+
+The pipeline expects two research data exports: NSDL FII trade parquets and
+NSE price/CA/deal data. They are **not** redistributed in this repository —
 `scripts/setup_data.sh` extracts them from local zips (override with
-`SOURCE_DIR`). NSDL FII records are licensed data — see
-`docs/01_data_preparation.md` for schema.
+`SOURCE_DIR`). NSDL FII records are licensed data; see
+[`docs/01_data_preparation.md`](docs/01_data_preparation.md) for schema.
 
-## 9. Requirements
+---
 
-Python ≥ 3.11 · numpy, pandas, polars, pyarrow, scipy, statsmodels,
-linearmodels, hmmlearn, lightgbm, scikit-learn, pyyaml, matplotlib
-(`requirements.txt` / `pyproject.toml`). macOS LightGBM needs
-`brew install libomp`.
+## 9 · Requirements
+
+Python ≥ 3.11 · `numpy` `pandas` `polars` `pyarrow` `scipy` `statsmodels`
+`linearmodels` `hmmlearn` `lightgbm` `scikit-learn` `pyyaml` `matplotlib`
+(see `requirements.txt` / `pyproject.toml`).
+
+macOS + LightGBM needs `brew install libomp`.
