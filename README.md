@@ -157,13 +157,13 @@ joints in the argument:
 flowchart TD
     subgraph DP["1 · Data preparation"]
         A1[NSE bhavcopy tape] --> A2[repaired price panel]
-        A3[Corporate-action records] --> A4[split/bonus adjustment factors<br/>tape-verified 99.1%]
-        A2 --> A5[CA-adjusted returns panel v2<br/>gate: ex-day median |ret| 0.508 to 0.038]
+        A3[Corporate-action records] --> A4["split/bonus adjustment factors<br/>tape-verified 99.1%"]
+        A2 --> A5["CA-adjusted returns panel v2<br/>gate: ex-day median ret 0.508 to 0.038"]
         A4 --> A5
     end
 
     subgraph FE["2 · Feature engineering"]
-        B1[Raw NSDL FII trades<br/>2011-2025] --> B2["10 probit-ranked stock-day<br/>flow features (backward-only windows)"]
+        B1["Raw NSDL FII trades<br/>2011-2025"] --> B2["10 probit-ranked stock-day<br/>flow features (backward-only windows)"]
     end
 
     subgraph ID["3 · Identity audit"]
@@ -185,9 +185,9 @@ flowchart TD
 
     subgraph VAL["6 · Economic validation battery"]
         E1 --> F1[Event study: excess-CAR diff-in-diff]
-        F1 --> F2[Liquidity-shock mechanism:<br/>pressure + volume + reversal arc]
+        F1 --> F2["Liquidity-shock mechanism:<br/>pressure + volume + reversal arc"]
         F2 --> F3["Panel regression<br/>(stock+date FE, 2-way cluster)"]
-        F3 --> F4[Robustness: horizons, dose,<br/>non-overlap, placebo]
+        F3 --> F4["Robustness: horizons, dose,<br/>non-overlap, placebo"]
         F4 --> F5[LightGBM challenger + SHAP]
         F5 --> F6["Independent endorsement:<br/>Easley-O'Hara PIN estimator"]
     end
