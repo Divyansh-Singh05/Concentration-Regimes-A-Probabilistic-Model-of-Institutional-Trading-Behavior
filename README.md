@@ -123,7 +123,7 @@ joints in the argument:
 
 | Objection | Test | Verdict |
 |---|---|---|
-| "The HMM is decoration" | Census-matched rule-based backbone reproduces Table 1 | **Confirmed** — HMM buys episode smoothness only; contribution re-ranked to (1) the identifier audit, (2) the composition measure, (3) the economics, (4) HMM |
+| "The HMM is decoration" | Census-matched rule-based backbone reproduces Table 1 | **Confirmed** — HMM buys episode smoothness only; contribution re-ranked to (1) the identifier audit, (2) the comp[...] |
 | "This is just index-reconstitution mechanics" | Exclude ±7 calendar days around 150 MSCI/FTSE/NIFTY review dates | **Passive mechanics excluded** — SHARK_DIST +61.5\*\*\*/+50.9\*\* survives |
 | "It's just bid-ask bounce" | Re-run on bounce-free windows (t+3 … t+22) | Bounce = **11–24% of the headline** effect, not all of it — repriced and stated verbatim, not hidden |
 | "Composition adds nothing beyond public/flow data" | LightGBM IC ladder: PUBLIC → +FLOW → +COMPOSITION | Composition adds ΔIC beyond both public data (t=5.2) and conventional flow (t=3.2) |
@@ -157,51 +157,51 @@ joints in the argument:
 flowchart TD
     subgraph DP["1 · Data preparation"]
         A1[NSE bhavcopy tape] --> A2[repaired price panel]
-        A3[Corporate-action records] --> A4[split/bonus adjustment factors\ntape-verified 99.1%]
-        A2 --> A5[CA-adjusted returns panel v2\ngate: ex-day median |ret| 0.508 to 0.038]
+        A3[Corporate-action records] --> A4[split/bonus adjustment factors<br/>tape-verified 99.1%]
+        A2 --> A5[CA-adjusted returns panel v2<br/>gate: ex-day median |ret| 0.508 to 0.038]
         A4 --> A5
     end
 
     subgraph FE["2 · Feature engineering"]
-        B1[Raw NSDL FII trades\n2011-2025] --> B2["10 probit-ranked stock-day\nflow features (backward-only windows)"]
+        B1[Raw NSDL FII trades<br/>2011-2025] --> B2["10 probit-ranked stock-day<br/>flow features (backward-only windows)"]
     end
 
     subgraph ID["3 · Identity audit"]
         C1[Masked FII/sub-account/broker IDs] --> C2{"Stable across months?"}
-        C2 -->|"No: re-minted ~monthly, proven by ID-persistence test"| C3["Redesign features as\nwithin-day / within-month only"]
+        C2 -->|"No: re-minted ~monthly, proven by ID-persistence test"| C3["Redesign features as<br/>within-day / within-month only"]
     end
 
     subgraph MD["4 · Regime model"]
-        B2 --> D1["3-state HMM backbone\n(SELL / NEUTRAL / BUY)"]
+        B2 --> D1["3-state HMM backbone<br/>(SELL / NEUTRAL / BUY)"]
         C3 --> D1
-        D1 --> D2["Concentration overlay thresholds\n(TRAIN-era quantile rule)"]
-        D2 --> D3["Archetypes: ROBOT / SHARK_DIST /\nSHARK_ACC / HOSTAGE"]
+        D1 --> D2["Concentration overlay thresholds<br/>(TRAIN-era quantile rule)"]
+        D2 --> D3["Archetypes: ROBOT / SHARK_DIST /<br/>SHARK_ACC / HOSTAGE"]
     end
 
     subgraph CN["5 · Canonical identity"]
-        A5 --> E1["Issuer-bounded ISIN closure\n(90.4% to 98.5% coverage)"]
+        A5 --> E1["Issuer-bounded ISIN closure<br/>(90.4% to 98.5% coverage)"]
         D3 --> E1
     end
 
     subgraph VAL["6 · Economic validation battery"]
         E1 --> F1[Event study: excess-CAR diff-in-diff]
-        F1 --> F2[Liquidity-shock mechanism:\npressure + volume + reversal arc]
-        F2 --> F3["Panel regression\n(stock+date FE, 2-way cluster)"]
-        F3 --> F4[Robustness: horizons, dose,\nnon-overlap, placebo]
+        F1 --> F2[Liquidity-shock mechanism:<br/>pressure + volume + reversal arc]
+        F2 --> F3["Panel regression<br/>(stock+date FE, 2-way cluster)"]
+        F3 --> F4[Robustness: horizons, dose,<br/>non-overlap, placebo]
         F4 --> F5[LightGBM challenger + SHAP]
-        F5 --> F6["Independent endorsement:\nEasley-O'Hara PIN estimator"]
+        F5 --> F6["Independent endorsement:<br/>Easley-O'Hara PIN estimator"]
     end
 
     subgraph ADV["7 · Adversarial self-audit"]
-        F6 --> G1["Referee simulation:\nis the HMM necessary? index mechanics?"]
-        G1 --> G2["Skeptic audit:\nbounce-free windows, SD-HO contrast"]
+        F6 --> G1["Referee simulation:<br/>is the HMM necessary? index mechanics?"]
+        G1 --> G2["Skeptic audit:<br/>bounce-free windows, SD-HO contrast"]
     end
 
     subgraph BT["8 · Backtests"]
         G2 --> H1[Engine correctness gates]
-        H1 --> H2["No-model baselines\n(frozen, recorded first)"]
+        H1 --> H2["No-model baselines<br/>(frozen, recorded first)"]
         H2 --> H3[Regime-conditioned strategies]
-        H3 --> H4["Gross vs net verdict:\nsignal real, costs bind (2-8bp breakeven)"]
+        H3 --> H4["Gross vs net verdict:<br/>signal real, costs bind (2-8bp breakeven)"]
     end
 ```
 
@@ -214,13 +214,13 @@ every one of the 55 registered stages).
 
 | Step | What happens | Why it's here |
 |---|---|---|
-| **① Data preparation** | Repair the price tape | It has real defects — a four-digit year bug, null 2011 ISINs, un-restated ex-date closes. Fix these *before* touching returns so every later bp number is trustworthy. |
-| **② Feature engineering** | Ten within-day, backward-only percentile-rank features | Cross-sectional ranking neutralizes 2011–2025 breadth growth and the 2021 structural break, without a single price or macro input. |
-| **③ Identity audit** | Test whether masked FII/broker IDs are stable | They are not — 0% cross-month persistence, proven formally. Every entity feature was redesigned to be within-day/within-month only. Standalone note: [`identifier_audit_note.md`](docs/paper/identifier_audit_note.md). |
-| **④ Regime model** | 3-state HMM backbone + concentration-overlay thresholds | Thresholds are frozen from the TRAIN era via a quantile rule — adopted *after* the original GMM approach failed its own stability falsification test. |
-| **⑤ Canonical identity** | Issuer-bounded ISIN closure | Corporate actions fragment one company across multiple ISINs; closure reconciles tape and model states, recovering 8 coverage points with zero false merger-collapses. |
-| **⑥ Validation battery** | Six independent methods, one question | Does concentrated vs. dispersed selling actually behave differently in forward returns? Event study, mechanism decomposition, FE panel regression, robustness battery, ML challenger, and an independent PIN estimator all converge on the same answer. |
-| **⑦ Adversarial self-audit** | Attack the strongest claims, twice | Once as a simulated referee, once as a deliberately hostile self-review — with the resulting price corrections reported verbatim, not just the surviving version. |
+| **① Data preparation** | Repair the price tape | It has real defects — a four-digit year bug, null 2011 ISINs, un-restated ex-date closes. Fix these *before* touching returns so every later bp n[...] |
+| **② Feature engineering** | Ten within-day, backward-only percentile-rank features | Cross-sectional ranking neutralizes 2011–2025 breadth growth and the 2021 structural break, without a single [...] |
+| **③ Identity audit** | Test whether masked FII/broker IDs are stable | They are not — 0% cross-month persistence, proven formally. Every entity feature was redesigned to be within-day/within-mon[...] |
+| **④ Regime model** | 3-state HMM backbone + concentration-overlay thresholds | Thresholds are frozen from the TRAIN era via a quantile rule — adopted *after* the original GMM approach failed its[...] |
+| **⑤ Canonical identity** | Issuer-bounded ISIN closure | Corporate actions fragment one company across multiple ISINs; closure reconciles tape and model states, recovering 8 coverage points with z[...] |
+| **⑥ Validation battery** | Six independent methods, one question | Does concentrated vs. dispersed selling actually behave differently in forward returns? Event study, mechanism decomposition, FE [...] |
+| **⑦ Adversarial self-audit** | Attack the strongest claims, twice | Once as a simulated referee, once as a deliberately hostile self-review — with the resulting price corrections reported verbat[...] |
 | **⑧ Backtests** | Does it survive transaction costs? | Answered honestly: the signal is real at the gross/portfolio level, but no variant clears realistic one-way costs. |
 
 ---
