@@ -30,7 +30,8 @@ from fii.runner import run_stage  # noqa: E402
 from fii.stages.registry import (  # noqa: E402
     PHASE_ORDER, STAGES, by_name, phase_stages)
 
-RUN_PHASES_DEFAULT = [p for p in PHASE_ORDER if p != "audit"]
+RUN_PHASES_DEFAULT = [p for p in PHASE_ORDER
+                      if p not in ("audit", "phase2", "fhmm")]
 
 
 def _print_list() -> None:

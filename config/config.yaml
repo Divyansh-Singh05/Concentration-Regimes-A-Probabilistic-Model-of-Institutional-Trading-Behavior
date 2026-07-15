@@ -1,5 +1,5 @@
 # =============================================================================
-# FII Flow Regimes — master configuration
+# Concentration Regimes — master configuration
 # Every path, split date, frozen threshold and cost assumption lives here.
 # Stages read this via fii.config; nothing is hardcoded in stage code.
 # =============================================================================

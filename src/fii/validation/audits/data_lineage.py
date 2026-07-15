@@ -62,7 +62,7 @@ print(raw20.filter(pl.col("date").dt.year() < 100).head(3))
 
 # ---------------------------------------------------------------------------
 hdr("STAGE 2 — returns_panel.parquet: after R1/R2/R3 repair + ret_cc/ret")
-print("module5a: date repair, ISIN backfill (symbol -> next known ISIN),")
+print("price_panel.py: date repair, ISIN backfill (symbol -> next known ISIN),")
 print("dedupe EQ>BE>BZ, then macro join (NIFTY/SP500/USDINR/VIX).")
 p1 = pl.read_parquet(DRIVE / "returns_panel.parquet")
 print("columns:", p1.columns)
@@ -100,7 +100,7 @@ print("  (obs_ratio from Step-1's independent tape check landed near 20)")
 
 # ---------------------------------------------------------------------------
 hdr("STAGE 5 — THE MERGE: factor event -> next traded row (forward as-of)")
-print("module5b2's join_asof by symbol, strategy='forward'. Shown here on")
+print("apply_adjustment.py's join_asof by symbol, strategy='forward'. Shown here on")
 print("just TITAN's event so the join mechanics are visible end to end.")
 rows_t = (p1.filter(pl.col("symbol") == "TITAN")
             .select("symbol", "date").unique().sort("date"))
@@ -158,7 +158,7 @@ print(j.filter(pl.col("ret_adj_mktadj").is_null())
 print("")
 match_rate = 100 * float(j["ret_adj_mktadj"].is_not_null().mean())
 print("overall match rate:", round(match_rate, 1), "% (matches the G2")
-print("gate result from module5a: 90.7%)")
+print("gate result from price_panel.py: 90.7%)")
 
 print("")
 print("=" * 78)

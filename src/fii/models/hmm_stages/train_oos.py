@@ -151,4 +151,4 @@ mp = {"features": FEATS,
 (TRAINED_MODELS / "hmm_backbone_params.json").write_text(
     json.dumps(mp, indent=2))
 print(f"Saved → {TRAINED_MODELS / 'hmm_backbone_params.json'}")
-print("Next: module3b_threshold_calibration.py")
+print("Next: threshold_calibration.py")

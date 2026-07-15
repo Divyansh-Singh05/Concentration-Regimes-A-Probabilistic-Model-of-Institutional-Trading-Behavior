@@ -98,4 +98,4 @@ print("   median |adj_fresh| =", round(float(m), 4),
       "| share < 20% =", round(100 * ok, 1), "%")
 print("   if this is small/high while stored ret_adj failed Gate A, the")
 print("   factor table is fine and ONLY the executed 5B-2 cell was corrupt:")
-print("   re-run module5b2 from the .py file via exec(open(...).read()).")
+print("   re-run apply_adjustment.py via exec(open(...).read()).")

@@ -11,6 +11,12 @@ auditable in this file:
 Originals are archived verbatim under legacy/colab_modules/.
 Any remaining '/content' or 'google.colab' reference is REPORTED so it
 can be reviewed by hand — never silently rewritten.
+
+Note: the destination filenames below (moduleN_*.py) reflect the state
+at migration time. A later pass renamed the src/fii/ copies to
+descriptive names (e.g. module9_net_innov.py -> flow_innovation.py);
+see src/fii/stages/registry.py for the current filenames. This script
+is a one-time historical record and is not meant to be re-run.
 """
 from __future__ import annotations
 

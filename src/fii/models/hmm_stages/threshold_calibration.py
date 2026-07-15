@@ -132,4 +132,4 @@ TRAINED_MODELS.mkdir(parents=True, exist_ok=True)
 print(f"\nThresholds → HOSTAGE: F_entity_s < {thr_h:+.3f} | SHARK_DIST: > {thr_sd:+.3f} "
       f"| SHARK_ACC: F_entity_buy_s > {thr_s:+.3f}")
 print(f"Saved → {OUT_CALIB}   {both.shape}")
-print("Next: module3c_descriptive_stats.py")
+print("Next: descriptive_stats.py")

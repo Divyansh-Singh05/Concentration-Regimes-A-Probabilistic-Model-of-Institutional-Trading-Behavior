@@ -1,5 +1,5 @@
 [project]
-name = "fii-flow-regimes"
+name = "concentration-regimes"
 version = "1.0.0"
 description = "FII flow-regime detection and the transitory/permanent decomposition of institutional price impact — reproducible research pipeline"
 requires-python = ">=3.11"
